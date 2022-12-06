@@ -41,7 +41,6 @@ function duplicate(c1, c2, c3) {
                 } else {
                     return a;
                 }
-
             }
         }
     }
