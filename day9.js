@@ -5,7 +5,6 @@ class Position {
     constructor() {
         this.x = 0;
         this.y = 0;
-        this.visited = 0;
     }
 
     left() {
@@ -24,11 +23,6 @@ class Position {
         this.x--
     }
 
-    move(x, y) {
-        this.x = x
-        this.y = y
-    }
-
     getPath() {
         return this.x + ',' + this.y
     }
@@ -38,6 +32,7 @@ try {
 
     let input = readFileSync('./input/day9.txt', 'utf8').split('\n')
     console.log(solve1(getCmds(input)))
+    console.log(solve2(getCmds(input)))
 
 } catch (error) {
     console.log(error)
@@ -54,19 +49,19 @@ function solve1(commands) {
             switch (cmd.direction) {
                 case 'R':
                     head.right()
-                    if (head.y - tail.y > 1) tail.move(head.x, head.y - 1)
+                    move(head, tail)
                     break;
                 case 'L':
                     head.left()
-                    if (tail.y - head.y > 1) tail.move(head.x, head.y + 1)
+                    move(head, tail)
                     break;
                 case 'U':
                     head.up()
-                    if (head.x - tail.x > 1) tail.move(head.x - 1, head.y)
+                    move(head, tail)
                     break;
                 case 'D':
                     head.down()
-                    if (tail.x - head.x > 1) tail.move(head.x + 1, head.y)
+                    move(head, tail)
                     break;
                 default:
                     console.log('no valid direction')
@@ -78,6 +73,74 @@ function solve1(commands) {
         }
     })
     return visited.size;
+}
+
+function solve2(commands) {
+    const head = new Position(), tail = new Array()
+    let visited = new Set()
+    for (let i = 0; i < 9; i++) {
+        tail.push(new Position)
+    }
+    commands.forEach(cmd => {
+        let i = 0
+        while (i < cmd.steps) {
+            i++
+            // move
+            switch (cmd.direction) {
+                case 'R':
+                    head.right()
+                    break;
+                case 'L':
+                    head.left()
+                    break;
+                case 'U':
+                    head.up()
+                    break;
+                case 'D':
+                    head.down()
+                    break;
+                default:
+                    console.log('no valid direction')
+                    break;
+            }
+            tail.reduce(move, head)
+            let path = tail[tail.length - 1].getPath() // trace last 'tail'
+            if (!visited.has(path)) visited.add(path)
+        }
+    })
+    return visited.size;
+}
+
+/**
+ * Calculate direction + diagonally
+ */
+function move(pre, curr) {
+    if (pre.y - curr.y > 1) {
+        curr.right()
+        if (pre.x < curr.x) curr.down()
+        if (pre.x > curr.x) curr.up()
+        return curr
+    }
+    if (curr.y - pre.y > 1) {
+        curr.left()
+        if (pre.x < curr.x) curr.down()
+        if (pre.x > curr.x) curr.up()
+        return curr
+    }
+    if (pre.x - curr.x > 1) {
+        curr.up()
+        if (pre.y < curr.y) curr.left()
+        if (pre.y > curr.y) curr.right()
+        return curr
+    }
+    if (curr.x - pre.x > 1) {
+        curr.down()
+        if (pre.y < curr.y) curr.left()
+        if (pre.y > curr.y) curr.right()
+        return curr
+    }
+    // no move
+    return curr
 }
 
 function getCmds(input) {
