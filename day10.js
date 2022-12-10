@@ -33,10 +33,6 @@ class CPU {
         return this.sum
     }
 
-    getX() {
-        return this.x
-    }
-
     getCrt() {
         return this.CRT
     }
@@ -65,9 +61,7 @@ function solve1(input) {
     });
     let crt = cpu.getCrt()
     for (let i = 0; i < crt.length; i += 40) {
-        let chunk = crt.slice(i, i + 40);
-        console.log(chunk.join(''))
-        // do whatever
+        console.log(crt.slice(i, i + 40).join(''))
     }
     return cpu.getSum()
 }
