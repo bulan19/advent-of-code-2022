@@ -12,6 +12,7 @@ class Monkey {
 try {
 
     console.log(solve1(setInput()))
+    console.log(solve2(setInput()))
 
 } catch (error) {
     console.log(error)
@@ -49,6 +50,39 @@ function solve1(monkeys) {
     return arr[0] * arr[1]
 }
 
+function solve2(monkeys) {
+    var base = [...monkeys].reduce((acc, monkey) => acc * monkey[1].test[0] , 1)
+    for (let i = 0; i < 10000; i++) {
+        monkeys.forEach(monkey => {
+            let [test, t, f] = monkey.test.slice()
+            while (monkey.items.length > 0) {
+                let item = monkey.items.shift()
+                let worry = 0
+                // count
+                monkey.inspections++
+                // operation
+                let [a, op, b] = monkey.operation.slice()
+                if (a == 'old') a = item
+                if (b == 'old') b = item
+                if (op == '*') worry = multiply(a, b)
+                if (op == '+') worry = add(a, b)
+                // why?
+                worry = worry % base
+                // test (%)
+                if (worry % test == 0) {
+                    monkeys.get(t).items.push(worry)
+                } else {
+                    monkeys.get(f).items.push(worry)
+                }
+            }
+        });
+    }
+    let arr = new Array()
+    monkeys.forEach((monkey) => arr.push(monkey.inspections) )
+    arr.sort((a, b) => b - a)
+    return arr[0] * arr[1]
+}
+
 function multiply(a, b) {
     return a * b
 }
@@ -67,5 +101,10 @@ function setInput() {
     monkeys.set(5, new Monkey([73, 51, 76, 59], ['old', '+', 8], [7, 2, 1]))
     monkeys.set(6, new Monkey([92], ['old', '+', 5], [11, 3, 0]))
     monkeys.set(7, new Monkey([99, 76, 78, 76, 79, 90, 89], ['old', '+', 7], [5, 4, 5]))
+    // test
+    // monkeys.set(0, new Monkey([79, 98], ['old', '*', 19], [23, 2, 3]))
+    // monkeys.set(1, new Monkey([54, 65, 75, 74], ['old', '+', 6], [19, 2, 0]))
+    // monkeys.set(2, new Monkey([79, 60, 97], ['old', '*', 'old'], [13, 1, 3]))
+    // monkeys.set(3, new Monkey([74], ['old', '+', 3], [17, 0, 1]))
     return monkeys
 }
